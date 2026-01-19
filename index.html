@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aira Userbot - Commands</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+        }
+        
+        .search-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .category-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .category-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+        
+        .category-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .category-count {
+            margin-left: auto;
+            background: rgba(255, 215, 0, 0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .command-list {
+            display: none;
+        }
+        
+        .command-list.show {
+            display: block;
+        }
+        
+        .command-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .command-item:hover {
+            background: rgba(0, 0, 0, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .command-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4CAF50;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 5px;
+        }
+        
+        .command-desc {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .copy-btn.copied {
+            background: #2196F3;
+        }
+        
+        .expand-all-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin: 20px 0;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        
+        .expand-all-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .stats-bar {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 20px;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🤖 AIRA USERBOT</h1>
+            <p style="font-size: 1.3em; margin-top: 10px;">Complete Commands Reference</p>
+        </div>
+
+        <!-- Search Box -->
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search commands... (e.g., ping, waifu, ban)">
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCommands">150+</div>
+                <div class="stat-label">Total Commands</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Working</div>
+            </div>
+        </div>
+
+        <!-- Expand All Button -->
+        <button class="expand-all-btn" onclick="toggleAllCategories()">📖 Expand All Categories</button>
+
+        <!-- Categories Grid -->
+        <div class="category-grid" id="categoriesGrid">
+            <!-- Categories will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const commands = {
+            basic: {
+                icon: '📱',
+                title: 'BASIC COMMANDS',
+                commands: [
+                    { cmd: '.ping', desc: 'Check response time (with video)' },
+                    { cmd: '.alive', desc: 'Bot status (with video)' },
+                    { cmd: '.aira', desc: 'Bot information (with video)' },
+                    { cmd: '.help', desc: 'Show this help message' },
+                    { cmd: '.stats', desc: 'Command usage statistics' },
+                    { cmd: '.menu', desc: 'Main menu with buttons' },
+                ]
+            },
+            media: {
+                icon: '🎨',
+                title: 'MEDIA COMMANDS',
+                commands: [
+                    { cmd: '.sticker', desc: 'Convert image to sticker' },
+                    { cmd: '.toimg', desc: 'Convert sticker to image' },
+                    { cmd: '.compress', desc: 'Compress image quality' },
+                ]
+            },
+            admin: {
+                icon: '👑',
+                title: 'ADMIN COMMANDS',
+                commands: [
+                    { cmd: '.ban', desc: 'Ban user from chat' },
+                    { cmd: '.unban', desc: 'Unban user from chat' },
+                    { cmd: '.mute [time]', desc: 'Mute user temporarily' },
+                    { cmd: '.purge', desc: 'Delete multiple messages' },
+                    { cmd: '.pin', desc: 'Pin message in chat' },
+                ]
+            },
+            utility: {
+                icon: '⚡',
+                title: 'UTILITY COMMANDS',
+                commands: [
+                    { cmd: '.info', desc: 'Get user/chat information' },
+                    { cmd: '.id', desc: 'Get user/chat IDs' },
+                    { cmd: '.calc <expr>', desc: 'Simple calculator' },
+                ]
+            },
+            afk: {
+                icon: '🔌',
+                title: 'AFK PLUGIN',
+                commands: [
+                    { cmd: '.afk [reason]', desc: 'Set yourself as AFK' },
+                    { cmd: '.unafk', desc: 'Remove AFK status' },
+                    { cmd: '.afkcheck', desc: 'Check AFK status' },
+                ]
+            },
+            fake: {
+                icon: '🎭',
+                title: 'FAKE ACTIONS',
+                commands: [
+                    { cmd: '.fake type [sec]', desc: 'Fake typing action' },
+                    { cmd: '.fake audio [sec]', desc: 'Fake audio recording' },
+                    { cmd: '.fake video [sec]', desc: 'Fake video recording' },
+                    { cmd: '.fake upload_photo [sec]', desc: 'Fake photo upload' },
+                    { cmd: '.fake upload_video [sec]', desc: 'Fake video upload' },
+                    { cmd: '.fake upload_doc [sec]', desc: 'Fake document upload' },
+                    { cmd: '.fake contact [sec]', desc: 'Fake contact choosing' },
+                    { cmd: '.fake game [sec]', desc: 'Fake game playing' },
+                    { cmd: '.fake random [n] [sec]', desc: 'N random actions' },
+                    { cmd: '.fake stop', desc: 'Stop all fake actions' },
+                ]
+            },
+            system: {
+                icon: '🔄',
+                title: 'SYSTEM COMMANDS',
+                commands: [
+                    { cmd: '.restart', desc: 'Restart the userbot' },
+                    { cmd: '.reboot', desc: 'Alias for restart' },
+                    { cmd: '.update', desc: 'Update from git & restart' },
+                    { cmd: '.gitpull', desc: 'Pull changes without restart' },
+                    { cmd: '.botinfo', desc: 'Show bot information' },
+                ]
+            },
+            waifu_basic: {
+                icon: '🎨',
+                title: 'WAIFU - BASIC',
+                commands: [
+                    { cmd: '.waifu', desc: 'Random waifu image' },
+                    { cmd: '.waifu [category]', desc: 'Get specific category waifu' },
+                    { cmd: '.waifu categories', desc: 'Show all available categories' },
+                    { cmd: '.randomwaifu', desc: 'Random category waifu' },
+                    { cmd: '.dailywaifu', desc: 'Daily free waifu' },
+                    { cmd: '.neko', desc: 'Random cat girl' },
+                    { cmd: '.catgirl', desc: 'Alias for .neko' },
+                    { cmd: '.megumin', desc: 'Megumin explosion' },
+                    { cmd: '.explosion', desc: 'Alias for .megumin' },
+                ]
+            },
+            waifu_reactions: {
+                icon: '💖',
+                title: 'WAIFU - REACTIONS',
+                commands: [
+                    { cmd: '.hug', desc: 'Hug gif (reply to send)' },
+                    { cmd: '.kiss', desc: 'Kiss gif (reply to send)' },
+                    { cmd: '.pat', desc: 'Head pat gif' },
+                    { cmd: '.cuddle', desc: 'Cuddle gif' },
+                    { cmd: '.bully', desc: 'Bully gif' },
+                    { cmd: '.slap', desc: 'Slap gif' },
+                    { cmd: '.kick', desc: 'Kick gif' },
+                    { cmd: '.bite', desc: 'Bite gif' },
+                    { cmd: '.poke', desc: 'Poke gif' },
+                    { cmd: '.wink', desc: 'Wink gif' },
+                    { cmd: '.smile', desc: 'Smile gif' },
+                    { cmd: '.blush', desc: 'Blush gif' },
+                    { cmd: '.dance', desc: 'Dance gif' },
+                    { cmd: '.cry', desc: 'Cry gif' },
+                    { cmd: '.happy', desc: 'Happy gif' },
+                    { cmd: '.highfive', desc: 'Highfive gif' },
+                    { cmd: '.handhold', desc: 'Handhold gif' },
+                    { cmd: '.nom', desc: 'Nom gif' },
+                    { cmd: '.glomp', desc: 'Glomp gif' },
+                    { cmd: '.yeet', desc: 'Yeet gif' },
+                    { cmd: '.cringe', desc: 'Cringe gif' },
+                ]
+            },
+            waifu_games: {
+                icon: '🎮',
+                title: 'WAIFU - GAMES',
+                commands: [
+                    { cmd: '.ratewaifu', desc: 'Rate a waifu (reply to use)' },
+                    { cmd: '.waifutrivia', desc: 'Waifu trivia game' },
+                    { cmd: '.waifuquiz', desc: 'Quick waifu quiz' },
+                    { cmd: '.waifufight', desc: 'Waifu battle simulator' },
+                    { cmd: '.waifulove', desc: 'Love calculator for waifus' },
+                    { cmd: '.waifumatch', desc: 'Find your waifu match' },
+                    { cmd: '.waifugacha', desc: 'Gacha system for waifus' },
+                    { cmd: '.waifuwish', desc: 'Wish for specific waifu' },
+                ]
+            },
+            waifu_info: {
+                icon: '📊',
+                title: 'WAIFU - INFO & STATS',
+                commands: [
+                    { cmd: '.waifustats', desc: 'Plugin statistics' },
+                    { cmd: '.waifulist', desc: 'List all popular waifus' },
+                    { cmd: '.topwaifu', desc: 'Top rated waifus' },
+                    { cmd: '.mywaifus', desc: 'Your collected waifus' },
+                    { cmd: '.waifurank', desc: 'Waifu ranking system' },
+                    { cmd: '.waifuhelp', desc: 'Complete help command' },
+                ]
+            },
+            waifu_utility: {
+                icon: '🛠️',
+                title: 'WAIFU - UTILITIES',
+                commands: [
+                    { cmd: '.savewaifu', desc: 'Save waifu to collection' },
+                    { cmd: '.deletewaifu', desc: 'Remove waifu from collection' },
+                    { cmd: '.sharewaifu', desc: 'Share waifu with friend' },
+                    { cmd: '.waifusearch', desc: 'Search for waifu by name' },
+                    { cmd: '.waifutag', desc: 'Tag waifu with category' },
+                    { cmd: '.waifufav', desc: 'Add to favorites' },
+                    { cmd: '.waifublock', desc: 'Block a waifu category' },
+                ]
+            },
+            waifu_fun: {
+                icon: '😂',
+                title: 'WAIFU - FUN',
+                commands: [
+                    { cmd: '.waifuquote', desc: 'Random waifu quote' },
+                    { cmd: '.waifufact', desc: 'Random waifu fact' },
+                    { cmd: '.waifujoke', desc: 'Waifu joke' },
+                    { cmd: '.waifupickupline', desc: 'Waifu pick-up line' },
+                    { cmd: '.waifucompliment', desc: 'Waifu compliment' },
+                    { cmd: '.waifuroast', desc: 'Roast a waifu' },
+                    { cmd: '.waifuworship', desc: 'Worship a waifu' },
+                    { cmd: '.waifubless', desc: 'Get waifu blessing' },
+                ]
+            },
+            clone: {
+                icon: '👥',
+                title: 'CLONE PLUGIN',
+                commands: [
+                    { cmd: '.clone [username/id]', desc: 'Clone user profile' },
+                    { cmd: '.clone (reply)', desc: 'Clone replied user' },
+                    { cmd: '.revert', desc: 'Revert to original profile' },
+                ]
+            },
+            ai: {
+                icon: '🤖',
+                title: 'AI IMAGE GENERATION',
+                commands: [
+                    { cmd: '.tarbogen [prompt]', desc: 'Generate AI image' },
+                    { cmd: '.tarbogen [prompt] --model creative', desc: 'Use creative model' },
+                    { cmd: '.tarbogen [prompt] --style anime', desc: 'Anime style' },
+                    { cmd: '.tarbogen [prompt] --size hd', desc: 'HD size' },
+                    { cmd: '.tarbogen [prompt] --num 2', desc: 'Generate 2 images' },
+                    { cmd: '.tarboinfo', desc: 'Show API info' },
+                    { cmd: '.tarbohistory', desc: 'Generation history' },
+                    { cmd: '.tarbomodels', desc: 'List models' },
+                    { cmd: '.tarbostyles', desc: 'List styles' },
+                ]
+            },
+        };
+
+        let allExpanded = false;
+
+        function createCategoryCard(key, data) {
+            const card = document.createElement('div');
+            card.className = 'category-card';
+            card.setAttribute('data-category', key);
+            
+            card.innerHTML = `
+                <div class="category-header" onclick="toggleCategory('${key}')">
+                    <div class="category-icon">${data.icon}</div>
+                    <div class="category-title">${data.title}</div>
+                    <div class="category-count">${data.commands.length}</div>
+                </div>
+                <div class="command-list" id="${key}-list">
+                    ${data.commands.map((cmd, idx) => `
+                        <div class="command-item">
+                            <button class="copy-btn" onclick="copyCommand('${cmd.cmd}', this)">Copy</button>
+                            <div class="command-name">${cmd.cmd}</div>
+                            <div class="command-desc">${cmd.desc}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function toggleCategory(key) {
+            const list = document.getElementById(`${key}-list`);
+            list.classList.toggle('show');
+        }
+
+        function toggleAllCategories() {
+            allExpanded = !allExpanded;
+            const btn = document.querySelector('.expand-all-btn');
+            
+            Object.keys(commands).forEach(key => {
+                const list = document.getElementById(`${key}-list`);
+                if (allExpanded) {
+                    list.classList.add('show');
+                    btn.textContent = '📕 Collapse All Categories';
+                } else {
+                    list.classList.remove('show');
+                    btn.textContent = '📖 Expand All Categories';
+                }
+            });
+        }
+
+        function copyCommand(cmd, btn) {
+            navigator.clipboard.writeText(cmd);
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            btn.classList.add('copied');
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.remove('copied');
+            }, 2000);
+        }
+
+        function searchCommands() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.category-card');
+            
+            cards.forEach(card => {
+                const commands = card.querySelectorAll('.command-item');
+                let hasMatch = false;
+                
+                commands.forEach(cmd => {
+                    const text = cmd.textContent.toLowerCase();
+                    if (text.includes(query)) {
+                        cmd.style.display = 'block';
+                        hasMatch = true;
+                    } else {
+                        cmd.style.display = 'none';
+                    }
+                });
+                
+                if (query === '') {
+                    card.style.display = 'block';
+                    commands.forEach(cmd => cmd.style.display = 'block');
+                } else if (hasMatch) {
+                    card.style.display = 'block';
+                    document.getElementById(card.dataset.category + '-list').classList.add('show');
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('categoriesGrid');
+            
+            Object.entries(commands).forEach(([key, data]) => {
+                grid.appendChild(createCategoryCard(key, data));
+            });
+            
+            // Count total commands
+            let total = 0;
+            Object.values(commands).forEach(cat => total += cat.commands.length);
+            document.getElementById('totalCommands').textContent = total;
+            
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', searchCommands);
+        });
+    </script>
+</body>
+</html>
